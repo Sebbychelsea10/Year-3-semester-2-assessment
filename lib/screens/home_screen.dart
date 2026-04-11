@@ -6,6 +6,7 @@ import 'expense_screen.dart';
 import 'income_screen.dart';
 import 'insights_screen.dart';
 import 'login_screen.dart';
+import 'settings_screen.dart'; 
 
 class HomeScreen extends StatefulWidget {
 
@@ -16,6 +17,7 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
 
 class _HomeScreenState extends State<HomeScreen> {
 
@@ -28,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     for (var tx in _transactions) {
       balance += tx.isIncome ? tx.amount : -tx.amount;
     }
+
 
     return balance;
   }
@@ -61,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+
   void addTransaction(Transaction transaction) async {
 
     await DatabaseHelper().insertTransaction({
@@ -77,17 +81,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
       "date": transaction.date.toIso8601String(),
 
-    });
+    }
+    );
 
     loadTransactions();
   }
 
-  void deleteTransaction(int index) {
+  //  delete button deletes from database
+  void deleteTransaction(int index) async {
 
-    setState(() {
-      _transactions.removeAt(index);
-    });
+    final tx = _transactions[index];
+
+    await DatabaseHelper().deleteTransaction(
+      widget.username,
+      tx.title,
+      tx.amount,
+      tx.date.toIso8601String(),
+    );
+
+    loadTransactions();
   }
+
 
   Widget buildMenuBox(
       BuildContext context, String title, Color color, Widget page) {
@@ -139,6 +153,19 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Dashboard - ${widget.username}'),
 
         actions: [
+
+          // Settings Button added
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
 
           IconButton(
             icon: const Icon(Icons.logout),
@@ -197,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+
 
             const SizedBox(height: 25),
 
@@ -288,15 +316,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             subtitle: Text(tx.category),
 
-                            trailing: Text(
-                              "£${tx.amount.toStringAsFixed(2)}",
+                            // updated to show amount and delete button
 
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: tx.isIncome
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+
+                                Text(
+                                  "£${tx.amount.toStringAsFixed(2)}",
+
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: tx.isIncome
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
+                                ),
+
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.grey),
+                                  onPressed: () => deleteTransaction(index),
+                                  
+                                ),
+                              ],
                             ),
 
                           ),

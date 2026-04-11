@@ -25,6 +25,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
     'Other',
   ];
 
+
   void _submit() {
     final title = _titleController.text.trim();
     final amount = double.tryParse(_amountController.text);
@@ -148,10 +149,14 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 child: const Text(
                   'Save Income',
                   style: TextStyle(fontSize: 18),
+
+
                 ),
+
               ),
             ),
           ],
+          
         ),
       ),
     );

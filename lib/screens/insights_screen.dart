@@ -8,13 +8,15 @@ class InsightsScreen extends StatelessWidget {
   const InsightsScreen({
     super.key,
     required this.transactions,
-  });
+  }
+  );
 
   double get totalIncome {
     return transactions
         .where((tx) => tx.isIncome)
         .fold(0, (sum, tx) => sum + tx.amount);
   }
+  
 
   double get totalExpenses {
     return transactions

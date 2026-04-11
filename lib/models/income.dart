@@ -3,9 +3,12 @@ class Income {
   final String source;
   final DateTime date;
 
+
   Income({
     required this.amount,
     required this.source,
     required this.date,
-  });
+  }
+  
+  );
 }

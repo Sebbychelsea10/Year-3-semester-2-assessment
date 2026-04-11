@@ -7,6 +7,7 @@ class Transaction {
   final String category;
   final DateTime date;
 
+
   Transaction({
     required this.title,
     required this.amount,
@@ -14,6 +15,7 @@ class Transaction {
     required this.category,
     required this.date,
   });
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -25,6 +27,7 @@ class Transaction {
     };
   }
 
+
   factory Transaction.fromMap(Map<String, dynamic> map) {
     return Transaction(
       title: map['title'],
@@ -33,6 +36,7 @@ class Transaction {
       category: map['category'],
       date: DateTime.parse(map['date']),
     );
+    
   }
 
   String toJson() => json.encode(toMap());

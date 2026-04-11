@@ -5,6 +5,7 @@ class SettingProvider with ChangeNotifier {
   bool _darkMode = false;
   bool _notificationsEnabled = true;
 
+
   bool get darkMode => _darkMode;
   bool get notificationsEnabled => _notificationsEnabled;
 
@@ -23,6 +24,7 @@ class SettingProvider with ChangeNotifier {
     notifyListeners();
   }
 
+
   // TOGGLE DARK MODE
   Future<void> setDarkMode(bool value) async {
     _darkMode = value;
@@ -33,7 +35,9 @@ class SettingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // TOGGLE NOTIFICATIONS
+
+  
+  // NOTIFICATIONS
   Future<void> setNotifications(bool value) async {
     _notificationsEnabled = value;
 
@@ -41,5 +45,7 @@ class SettingProvider with ChangeNotifier {
     await prefs.setBool("notifications", value);
 
     notifyListeners();
+
   }
+
 }

@@ -11,6 +11,7 @@ class ExpenseScreen extends StatefulWidget {
   State<ExpenseScreen> createState() => _ExpenseScreenState();
 }
 
+
 class _ExpenseScreenState extends State<ExpenseScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -41,10 +42,12 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       date: DateTime.now(),
     );
 
+
     widget.onAdd(transaction);
 
     Navigator.pop(context);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,11 +113,13 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                 child: const Text(
                   "Save Expense",
                   style: TextStyle(fontSize: 18),
+
                 ),
               ),
             ),
           ],
         ),
+        
       ),
     );
   }

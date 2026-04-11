@@ -26,6 +26,7 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
 
+
             SwitchListTile(
               title: const Text("Enable Notifications"),
               value: settings.notificationsEnabled,
@@ -35,6 +36,7 @@ class SettingsScreen extends StatelessWidget {
             ),
 
           ],
+          
         ),
       ),
     );
