@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/transaction.dart';
 
+// Screen used to add a new expense
+
 class ExpenseScreen extends StatefulWidget {
+
+   // Function passed from home screen to add a transaction
   
   final Function(Transaction) onAdd;
 
@@ -13,6 +17,8 @@ class ExpenseScreen extends StatefulWidget {
 
 
 class _ExpenseScreenState extends State<ExpenseScreen> {
+  // Controllers to get user input from text fields
+
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -27,6 +33,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     "Other"
   ];
 
+  // This function runs when user presses "Save Expense"
+
   void _saveExpense() {
     final amount = double.tryParse(_amountController.text);
 
@@ -34,6 +42,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       return;
     }
 
+
+    // Create a new transaction object with the user input and pass it back to home screen
     final transaction = Transaction(
       title: _descriptionController.text,
       amount: amount,
@@ -60,6 +70,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
         child: Column(
           children: [
 
+             // Input for amount
+
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
@@ -70,12 +82,14 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             ),
 
             const SizedBox(height: 15),
+            
 
             TextField(
               controller: _descriptionController,
               decoration: const InputDecoration(
                 labelText: "Description",
                 border: OutlineInputBorder(),
+                
               ),
             ),
 

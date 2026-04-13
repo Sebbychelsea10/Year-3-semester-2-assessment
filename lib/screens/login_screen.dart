@@ -12,18 +12,25 @@ class LoginScreen extends StatefulWidget {
 
 
 class _LoginScreenState extends State<LoginScreen> {
+   // Controllers used to get what the user types into the text fields
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  Future<void> login() async {
+  // This function runs when the user presses the login button
 
+  Future<void> login() async {
+// Get input values and remove any extra spaces
     String username = usernameController.text.trim();
     String password = passwordController.text.trim();
+
+    // Check if the user exists in the database
 
     bool validUser = await DatabaseHelper().validateUser(username, password);
 
     if (validUser) {
+
+      // If login is correct, move to the home screen
 
       Navigator.pushReplacement(
         context,
@@ -33,6 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
     } else {
+
+       // If login fails, show an error message
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -57,6 +66,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
 
+            // Username input field
+
             TextField(
               controller: usernameController,
               decoration: const InputDecoration(
@@ -65,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             const SizedBox(height: 15),
+             // Password input field (hidden text)
 
             TextField(
               controller: passwordController,
@@ -76,6 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
             const SizedBox(height: 25),
 
+            // Login button
+
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -85,6 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             const SizedBox(height: 10),
+
+             // Navigate to signup page if user doesn't have an account
 
             TextButton(
               onPressed: () {

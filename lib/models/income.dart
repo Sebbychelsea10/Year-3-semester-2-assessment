@@ -1,3 +1,4 @@
+// This class represents an income entry (money coming in)
 class Income {
   final double amount;
   final String source;

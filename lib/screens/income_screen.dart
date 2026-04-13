@@ -11,12 +11,17 @@ class IncomeScreen extends StatefulWidget {
 }
 
 class _IncomeScreenState extends State<IncomeScreen> {
+
+  // Controllers to get user input from text fields
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
+
+  // Default values for category and date
 
   String _selectedCategory = 'Student Loan';
   DateTime _selectedDate = DateTime.now();
 
+// List of income categories
   final List<String> _categories = [
     'Student Loan',
     'Part-time Job',
@@ -25,7 +30,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
     'Other',
   ];
 
-
+// Handles saving income when user presses "Save Income"
   void _submit() {
     final title = _titleController.text.trim();
     final amount = double.tryParse(_amountController.text);
@@ -33,7 +38,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
     if (title.isEmpty || amount == null || amount <= 0) {
       return;
     }
-
+// Creates a new Transaction object and sends it back to HomeScreen
     widget.onAdd(
       Transaction(
         title: title,
@@ -44,8 +49,10 @@ class _IncomeScreenState extends State<IncomeScreen> {
       ),
     );
 
-    Navigator.pop(context);
+    Navigator.pop(context); // go back to previous screen after saving
   }
+
+  // Opens date picker so user can choose a custom date
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -54,6 +61,8 @@ class _IncomeScreenState extends State<IncomeScreen> {
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
+
+    // Only update if user actually selects a date
 
     if (picked != null) {
       setState(() => _selectedDate = picked);
@@ -70,7 +79,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-
+ // Input for income title
             TextField(
               controller: _titleController,
               decoration: const InputDecoration(
@@ -80,7 +89,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
             ),
 
             const SizedBox(height: 15),
-
+// Input for amount
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
@@ -91,6 +100,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
             ),
 
             const SizedBox(height: 15),
+            // Dropdown to choose category
 
             DropdownButtonFormField<String>(
               value: _selectedCategory,
@@ -129,6 +139,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                     style: const TextStyle(fontSize: 16),
                   ),
                   TextButton(
+                     // Button to open date picker
                     onPressed: _pickDate,
                     child: const Text('Select Date'),
                   ),
@@ -137,6 +148,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
             ),
 
             const SizedBox(height: 30),
+            // Save button
 
             SizedBox(
               width: double.infinity,

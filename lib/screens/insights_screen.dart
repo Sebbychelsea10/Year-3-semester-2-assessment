@@ -11,12 +11,15 @@ class InsightsScreen extends StatelessWidget {
   }
   );
 
+  // Calculates total income from all transactions
+
   double get totalIncome {
     return transactions
         .where((tx) => tx.isIncome)
         .fold(0, (sum, tx) => sum + tx.amount);
   }
   
+  // Calculates total expenses from all transactions
 
   double get totalExpenses {
     return transactions
@@ -24,15 +27,20 @@ class InsightsScreen extends StatelessWidget {
         .fold(0, (sum, tx) => sum + tx.amount);
   }
 
+  // Groups expenses by category (used for pie chart + list)
+
   Map<String, double> get expenseByCategory {
     final Map<String, double> data = {};
 
     for (var tx in transactions.where((t) => !t.isIncome)) {
+      // if category exists, add to it, otherwise start from 0
       data[tx.category] = (data[tx.category] ?? 0) + tx.amount;
     }
 
     return data;
   }
+
+// Reusable card widget for income / expenses / balance
 
   Widget buildSummaryCard(String title, double amount, Color color) {
     return Expanded(
@@ -54,7 +62,7 @@ class InsightsScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: color,
+                  color: color, // colour changes depending on type
                 ),
               ),
             ],
@@ -66,6 +74,7 @@ class InsightsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // net balance = income - expenses
     final netBalance = totalIncome - totalExpenses;
 
     return Scaffold(
@@ -73,6 +82,7 @@ class InsightsScreen extends StatelessWidget {
         title: const Text('Insights'),
       ),
       body: Padding(
+        // If no data, show message instead of empty screen
         padding: const EdgeInsets.all(16),
         child: transactions.isEmpty
             ? const Center(
@@ -93,6 +103,7 @@ class InsightsScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 15),
+                  // Top summary cards (income, expenses, balance)
 
                   Row(
                     children: [
@@ -107,7 +118,7 @@ class InsightsScreen extends StatelessWidget {
                           netBalance,
                           netBalance >= 0
                               ? Colors.green
-                              : Colors.red),
+                              : Colors.red), // green if positive, red if negative
                     ],
                   ),
 
@@ -121,6 +132,8 @@ class InsightsScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 15),
+
+                  // Pie chart showing spending distribution
 
                   PieChart(
                     dataMap: expenseByCategory.isEmpty
@@ -148,6 +161,7 @@ class InsightsScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 10),
+                  // List of categories with totals
 
                   Expanded(
                     child: ListView(

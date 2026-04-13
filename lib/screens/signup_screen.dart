@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/database_helper.dart';
 
+// Screen for creating a new user account
+
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -11,13 +13,19 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
 
+  // Controllers to get input from text fields
+
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
+// Handles the signup process
   Future<void> signup() async {
 
+// Get user input and remove extra spaces
     String username = usernameController.text.trim();
     String password = passwordController.text.trim();
+
+    // Basic validation to make sure fields aren't empty
 
     if (username.isEmpty || password.isEmpty) {
 
@@ -28,12 +36,14 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
+    // Insert new user into the database
+
     await DatabaseHelper().insertUser(username, password);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Account created successfully")),
     );
-
+// Go back to login screen after signup
     Navigator.pop(context);
   }
 
@@ -50,6 +60,7 @@ class _SignupScreenState extends State<SignupScreen> {
         child: Column(
 
           children: [
+            // Username input
 
             TextField(
               controller: usernameController,
@@ -59,6 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
 
             const SizedBox(height: 15),
+             // Password input (hidden for security)
 
             TextField(
               controller: passwordController,
@@ -69,6 +81,9 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
 
             const SizedBox(height: 25),
+
+
+            // Button to trigger signup
 
             SizedBox(
               width: double.infinity,

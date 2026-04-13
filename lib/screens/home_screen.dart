@@ -8,6 +8,8 @@ import 'insights_screen.dart';
 import 'login_screen.dart';
 import 'settings_screen.dart'; 
 
+// This is the main dashboard screen after the user logs in
+
 class HomeScreen extends StatefulWidget {
   final String username;
 
@@ -16,26 +18,30 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+// Stores all transactions for the logged-in user
 
 class _HomeScreenState extends State<HomeScreen> {
 
   List<Transaction> _transactions = [];
 
-  // ✅ NEW: Budget value (you can later move this to settings)
+  // Simple budget value (used for alert if user overspends)
+
   double budget = 500;
 
-  // ✅ CURRENT BALANCE
+// Calculates the current balance based on income - expenses
+
   double get totalBalance {
     double balance = 0;
 
     for (var tx in _transactions) {
+      // If it's income we add it, if it's expense we subtract it
       balance += tx.isIncome ? tx.amount : -tx.amount;
     }
 
     return balance;
   }
 
-  // ✅ NEW: TOTAL EXPENSES CALCULATION
+  // this calculates total expenses (used for budget alert)
   double get totalExpenses {
     double total = 0;
 
@@ -84,7 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
     loadTransactions();
   }
 
-  // ✅ DELETE WITH DATABASE
+  // this function deletes a transaction from the database and reloads the list
+
   void deleteTransaction(int index) async {
 
     final tx = _transactions[index];
@@ -99,7 +106,8 @@ class _HomeScreenState extends State<HomeScreen> {
     loadTransactions();
   }
 
-  // ✅ NEW: DELETE CONFIRMATION POPUP
+  // this function shows a confirmation dialog before deleting a transaction
+
   void confirmDelete(int index) async {
 
     bool? confirm = await showDialog(
@@ -199,8 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
 
-            // ✅ BALANCE CARD
+            // this card shows the current balance at the top of the dashboard
             Card(
+
               elevation: 4,
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -232,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 15),
 
-            // ✅ NEW: BUDGET ALERT
+            // this shows a red warning box if the total expenses exceed the budget
             if (totalExpenses > budget)
               Container(
                 width: double.infinity,

@@ -1,3 +1,4 @@
+// This class represents a single expense entry in the app
 class Expense {
   final double amount;
   final String category;
@@ -5,6 +6,7 @@ class Expense {
   final String? note;
 
 
+// Constructor used to create a new Expense object
   Expense({
     required this.amount,
     required this.category,

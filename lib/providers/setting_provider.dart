@@ -14,7 +14,7 @@ class SettingProvider with ChangeNotifier {
     _loadSettings();
   }
 
-  // LOAD SAVED SETTINGS
+  // this function loads the saved settings from shared preferences when the provider is initialized
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -25,7 +25,7 @@ class SettingProvider with ChangeNotifier {
   }
 
 
-  // TOGGLE DARK MODE
+  // this toggles the dark mode setting and saves it to shared preferences 
   Future<void> setDarkMode(bool value) async {
     _darkMode = value;
 
@@ -37,7 +37,7 @@ class SettingProvider with ChangeNotifier {
 
 
   
-  // NOTIFICATIONS
+  // this function updates the notification setting and saves it to shared preferences so it persists across app restarts
   Future<void> setNotifications(bool value) async {
     _notificationsEnabled = value;
 
