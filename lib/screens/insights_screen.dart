@@ -5,7 +5,7 @@ import 'package:pie_chart/pie_chart.dart';
 import '../models/transaction.dart';
 import '../providers/setting_provider.dart';
 
-class InsightsScreen extends StatelessWidget {
+class InsightsScreen extends StatefulWidget {
   final List<Transaction> transactions;
 
   const InsightsScreen({
@@ -13,16 +13,47 @@ class InsightsScreen extends StatelessWidget {
     required this.transactions,
   });
 
+  @override
+  State<InsightsScreen> createState() => _InsightsScreenState();
+}
+
+class _InsightsScreenState extends State<InsightsScreen> {
+
+  // NEW: selected filter range
+  String selectedRange = "All";
+
+  // NEW: filtered transactions based on selected range
+  List<Transaction> get filteredTransactions {
+    DateTime now = DateTime.now();
+
+    if (selectedRange == "7 Days") {
+      return widget.transactions.where((tx) =>
+          tx.date.isAfter(now.subtract(const Duration(days: 7)))).toList();
+    }
+
+    if (selectedRange == "30 Days") {
+      return widget.transactions.where((tx) =>
+          tx.date.isAfter(now.subtract(const Duration(days: 30)))).toList();
+    }
+
+    if (selectedRange == "3 Months") {
+      return widget.transactions.where((tx) =>
+          tx.date.isAfter(now.subtract(const Duration(days: 90)))).toList();
+    }
+
+    return widget.transactions;
+  }
+
   // calculates total income
   double get totalIncome {
-    return transactions
+    return filteredTransactions
         .where((tx) => tx.isIncome)
         .fold(0, (sum, tx) => sum + tx.amount);
   }
 
   // calculates total expenses
   double get totalExpenses {
-    return transactions
+    return filteredTransactions
         .where((tx) => !tx.isIncome)
         .fold(0, (sum, tx) => sum + tx.amount);
   }
@@ -31,7 +62,7 @@ class InsightsScreen extends StatelessWidget {
   Map<String, double> get expenseByCategory {
     final Map<String, double> data = {};
 
-    for (var tx in transactions.where((t) => !t.isIncome)) {
+    for (var tx in filteredTransactions.where((t) => !t.isIncome)) {
       data[tx.category] = (data[tx.category] ?? 0) + tx.amount;
     }
 
@@ -98,7 +129,7 @@ class InsightsScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
 
-        child: transactions.isEmpty
+        child: widget.transactions.isEmpty
             ? const Center(
                 child: Text(
                   'No transactions yet',
@@ -108,6 +139,28 @@ class InsightsScreen extends StatelessWidget {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
+                  // NEW: filter dropdown
+                  DropdownButtonFormField<String>(
+                    value: selectedRange,
+                    items: ["All", "7 Days", "30 Days", "3 Months"]
+                        .map((range) => DropdownMenuItem(
+                              value: range,
+                              child: Text(range),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRange = value!;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: "Filter by time",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
 
                   const Text(
                     "Financial Overview",
