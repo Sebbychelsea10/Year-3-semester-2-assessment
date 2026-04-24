@@ -17,7 +17,6 @@ class _IncomeScreenState extends State<IncomeScreen> {
   final _amountController = TextEditingController();
 
   // Default values for category and date
-
   String _selectedCategory = 'Student Loan';
   DateTime _selectedDate = DateTime.now();
 
@@ -29,6 +28,27 @@ class _IncomeScreenState extends State<IncomeScreen> {
     'Family',
     'Other',
   ];
+
+  // NEW: predicted yearly income
+  double get predictedYearlyIncome {
+    final amount = double.tryParse(_amountController.text) ?? 0;
+    return amount * 12;
+  }
+
+  // NEW: recommended savings (20% rule)
+  double get recommendedSavings {
+    final amount = double.tryParse(_amountController.text) ?? 0;
+    return amount * 0.2;
+  }
+
+  // NEW: financial health indicator
+  String get financialHealth {
+    final amount = double.tryParse(_amountController.text) ?? 0;
+
+    if (amount < 500) return "Low Income";
+    if (amount < 1500) return "Moderate Income";
+    return "Strong Income";
+  }
 
 // Handles saving income when user presses "Save Income"
   void _submit() {
@@ -53,7 +73,6 @@ class _IncomeScreenState extends State<IncomeScreen> {
   }
 
   // Opens date picker so user can choose a custom date
-
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -63,7 +82,6 @@ class _IncomeScreenState extends State<IncomeScreen> {
     );
 
     // Only update if user actually selects a date
-
     if (picked != null) {
       setState(() => _selectedDate = picked);
     }
@@ -79,6 +97,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
+
  // Input for income title
             TextField(
               controller: _titleController,
@@ -97,11 +116,66 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 labelText: 'Amount (£)',
                 border: OutlineInputBorder(),
               ),
+              onChanged: (_) {
+                setState(() {}); // 🔥 updates predictions live
+              },
             ),
 
             const SizedBox(height: 15),
-            // Dropdown to choose category
 
+            // NEW: Advanced income insights
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Yearly Projection"),
+                        Text("£${predictedYearlyIncome.toStringAsFixed(2)}"),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Suggested Savings (20%)"),
+                        Text("£${recommendedSavings.toStringAsFixed(2)}"),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Financial Health"),
+                        Text(
+                          financialHealth,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: financialHealth == "Low Income"
+                                ? Colors.red
+                                : financialHealth == "Moderate Income"
+                                    ? Colors.orange
+                                    : Colors.green,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            // Dropdown to choose category
             DropdownButtonFormField<String>(
               value: _selectedCategory,
               items: _categories
@@ -139,7 +213,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                     style: const TextStyle(fontSize: 16),
                   ),
                   TextButton(
-                     // Button to open date picker
+                    // Button to open date picker
                     onPressed: _pickDate,
                     child: const Text('Select Date'),
                   ),
@@ -149,7 +223,6 @@ class _IncomeScreenState extends State<IncomeScreen> {
 
             const SizedBox(height: 30),
             // Save button
-
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -161,14 +234,10 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 child: const Text(
                   'Save Income',
                   style: TextStyle(fontSize: 18),
-
-
                 ),
-
               ),
             ),
           ],
-          
         ),
       ),
     );
