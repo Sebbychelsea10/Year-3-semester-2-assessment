@@ -9,6 +9,7 @@ import 'income_screen.dart';
 import 'insights_screen.dart';
 import 'login_screen.dart';
 import 'settings_screen.dart'; 
+import 'recommendation_screen.dart';
 
 // This is the main dashboard screen after the user logs in
 
@@ -26,28 +27,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Transaction> _transactions = [];
 
-  // Simple budget value (used for alert if user overspends)
   double budget = 500;
-
-  // this stores how much user has moved into savings (reduces balance)
   double savingsTransferred = 0;
 
-  // Calculates the current balance based on income - expenses
   double get totalBalance {
     double balance = 0;
 
     for (var tx in _transactions) {
-      // If it's income we add it, if it's expense we subtract it
       balance += tx.isIncome ? tx.amount : -tx.amount;
     }
 
-    // subtract savings from balance (acts like moving money away)
     balance -= savingsTransferred;
-
     return balance;
   }
 
-  // this calculates total expenses (used for budget alert)
   double get totalExpenses {
     double total = 0;
 
@@ -94,7 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
     loadTransactions();
   }
 
-  // this function deletes a transaction from the database and reloads the list
   void deleteTransaction(int index) async {
     final tx = _transactions[index];
 
@@ -108,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
     loadTransactions();
   }
 
-  // this function shows a confirmation dialog before deleting a transaction
   void confirmDelete(int index) async {
     bool? confirm = await showDialog(
       context: context,
@@ -133,9 +124,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // NEW: move money into savings (reduces balance)
   void addToSavings(SettingProvider settings) {
-    double amount = 10; // fixed amount for now
+    double amount = 10;
 
     settings.addSavings(amount);
 
@@ -212,154 +202,141 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+      // 
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
 
-            // this card shows the current balance at the top of the dashboard
-            Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-
-                    const Text(
-                      "Current Balance",
-                      style: TextStyle(fontSize: 16),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Text(
-                      "${settings.currency}${balance.toStringAsFixed(2)}",
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: balance >= 0
-                            ? Colors.green
-                            : Colors.red,
+              Card(
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      const Text("Current Balance"),
+                      const SizedBox(height: 10),
+                      Text(
+                        "${settings.currency}${balance.toStringAsFixed(2)}",
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: balance >= 0
+                              ? Colors.green
+                              : Colors.red,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 15),
+              const SizedBox(height: 15),
 
-            // NEW: savings progress bar
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  children: [
-
-                    const Text(
-                      "Savings Goal",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    LinearProgressIndicator(
-                      value: settings.savingsGoal == 0
-                          ? 0
-                          : settings.savingsAmount / settings.savingsGoal,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Text(
-                      "${settings.currency}${settings.savingsAmount.toStringAsFixed(2)} / ${settings.currency}${settings.savingsGoal}",
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    ElevatedButton(
-                      onPressed: () => addToSavings(settings),
-                      child: const Text("Add to Savings"),
-                    ),
-                  ],
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    children: [
+                      const Text("Savings Goal"),
+                      const SizedBox(height: 10),
+                      LinearProgressIndicator(
+                        value: settings.savingsGoal == 0
+                            ? 0
+                            : settings.savingsAmount / settings.savingsGoal,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "${settings.currency}${settings.savingsAmount.toStringAsFixed(2)} / ${settings.currency}${settings.savingsGoal}",
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () => addToSavings(settings),
+                        child: const Text("Add to Savings"),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            // this shows a red warning box if the total expenses exceed the budget
-            if (totalExpenses > budget)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(10),
+              if (totalExpenses > budget)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Text(
+                    "⚠️ You have exceeded your budget!",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-                child: const Text(
-                  "⚠️ You have exceeded your budget!",
+
+              const SizedBox(height: 10),
+
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 15,
+                crossAxisSpacing: 15,
+                children: [
+
+                  buildMenuBox(
+                    context,
+                    "Add Expense",
+                    Colors.red,
+                    ExpenseScreen(onAdd: addTransaction),
+                  ),
+
+                  buildMenuBox(
+                    context,
+                    "Add Income",
+                    Colors.green,
+                    IncomeScreen(onAdd: addTransaction),
+                  ),
+
+                  buildMenuBox(
+                    context,
+                    "Insights",
+                    Colors.blue,
+                    InsightsScreen(transactions: _transactions),
+                  ),
+
+                  buildMenuBox(
+                    context,
+                    "Recommendations",
+                    Colors.purple,
+                    RecommendationScreen(transactions: _transactions),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 25),
+
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Recent Transactions",
                   style: TextStyle(
-                    color: Colors.white,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              mainAxisSpacing: 15,
-              crossAxisSpacing: 15,
-              children: [
-
-                buildMenuBox(
-                  context,
-                  "Add Expense",
-                  Colors.red,
-                  ExpenseScreen(onAdd: addTransaction),
-                ),
-
-                buildMenuBox(
-                  context,
-                  "Add Income",
-                  Colors.green,
-                  IncomeScreen(onAdd: addTransaction),
-                ),
-
-                buildMenuBox(
-                  context,
-                  "Insights",
-                  Colors.blue,
-                  InsightsScreen(transactions: _transactions),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 25),
-
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Recent Transactions",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            Expanded(
-              child: _transactions.isEmpty
-                  ? const Center(
-                      child: Text("No transactions yet"),
-                    )
+              _transactions.isEmpty
+                  ? const Center(child: Text("No transactions yet"))
                   : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: _transactions.length,
                       itemBuilder: (context, index) {
 
@@ -367,12 +344,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         return Card(
                           child: ListTile(
-
                             leading: CircleAvatar(
                               backgroundColor:
-                                  tx.isIncome
-                                      ? Colors.green
-                                      : Colors.red,
+                                  tx.isIncome ? Colors.green : Colors.red,
                               child: Icon(
                                 tx.isIncome
                                     ? Icons.arrow_downward
@@ -380,14 +354,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.white,
                               ),
                             ),
-
                             title: Text(tx.title),
                             subtitle: Text(tx.category),
-
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-
                                 Text(
                                   "${settings.currency}${tx.amount.toStringAsFixed(2)}",
                                   style: TextStyle(
@@ -397,7 +368,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         : Colors.red,
                                   ),
                                 ),
-
                                 IconButton(
                                   icon: const Icon(Icons.delete, color: Colors.grey),
                                   onPressed: () => confirmDelete(index),
@@ -408,10 +378,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+      //  FIX ENDS HERE
     );
   }
 }
